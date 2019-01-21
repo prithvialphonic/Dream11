@@ -13,10 +13,10 @@ import {
 } from 'react-native';
 import Entypo from 'react-native-vector-icons/Entypo';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-const data = require('../Dummy/Contest');
+const data = require('../../Dummy/Contest');
 
 Props = {};
-class Contests extends Component<Props> {
+class HomeContests extends Component<Props> {
 
   static navigationOptions={
     headerStyle: {
@@ -36,14 +36,6 @@ class Contests extends Component<Props> {
         smallContest: [],
         bigContest: []
     };
-    this.contestInaam= {
-      name: '0 - 5 Overs',
-      spotsLeft: 975,
-      prize: 25000,
-      winners: 10000,
-      fees: 25,
-      totalteams: 1000
-    }
   };
 
   componentWillMount() {
@@ -59,14 +51,16 @@ class Contests extends Component<Props> {
     });
   }
 
-  secondsToString( timeRemaining ) {
-    // timeRemaining = timeRemaining / 1000000
-    var date = String(new Date(timeRemaining));
-    return date;
-    // alert(date)
-    // return (setInterval(()=> {
-    //       this.calculate(timeRemaining)
-    //     }, 1000));
+  secondsToString( millisecond ) {
+    let seconds= millisecond / 1000000
+    var day, hour, minute, sec;
+    day = Math.floor(seconds / 86400);
+    let h = seconds % 86400
+    hour = Math.floor(h / 3600)
+    let m = h % 3600
+    minute = Math.floor(m / 60)
+    // alert(sec)
+    return (' ' +day+ ' days ' + hour+ ' hours ' + minute + ' minutes ' );
   }
 
   truncate(string) {
@@ -104,10 +98,12 @@ class Contests extends Component<Props> {
                   
                   <View style= {{flexDirection: 'row', justifyContent: 'space-around'}}>
                   <Entypo name= "clock" color= "red" size= {14} style= {{alignSelf: 'center'}} />
-                  <Text>{this.secondsToString(match.startTime)}</Text>
+                  {/**<Text>{this.secondsToString(match.startTime)}</Text>**/}
                   </View>
                   </View>
                 </View>
+
+
 
                   <Text style= {{ fontSize: 18, alignSelf: 'center', margin: 4}}>
                       Choose from below contests to PLAY!
@@ -127,8 +123,8 @@ class Contests extends Component<Props> {
                     </View>
                   </View>
 
-                  <View style= {{flexDirection: 'column', justifyContent: 'space-between', alignItems: 'center', width: '100%', padding: 4}}>
-                  <View style= {{flexDirection: 'column', justifyContent: 'space-between', alignItems: 'center', borderWidth: 2, backgroundColor: 'white', borderColor: 'green', width: '98%', padding: 4, margin: 4}}>
+                  <View style= {{flexDirection: 'column', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#F8EFBA', width: '94%', padding: 8}}>
+                  <View style= {{flexDirection: 'column', justifyContent: 'space-between', alignItems: 'center', borderWidth: 2, backgroundColor: 'white', borderColor: 'green', width: '93%', padding: 10, margin: 10}}>
                     <Text style= {{fontSize: 16, fontStyle: 'bold'}}>
                       0 - 5 Overs
                     </Text>
@@ -166,14 +162,6 @@ class Contests extends Component<Props> {
                       </Text>
                       </View>
                     </View>
-
-                      <TouchableOpacity 
-                        onPress= {()=>this.props.navigation.navigate('ContestDetails', {data: match, contestname: this.contestInaam})}
-                        style= {{justifyContent: 'center', alignItems: 'center', width: 80, height: 40, backgroundColor: '#44bd32', borderRadius: 18, margin: 2, padding: 2, elevation: 4}}>
-                        <Text>Join Now !
-                        </Text>
-                      </TouchableOpacity>
-                    
                     </View>
 
                     <ProgressBarAndroid
@@ -193,13 +181,19 @@ class Contests extends Component<Props> {
                       </Text>
                   </View>                           
 
+                  <TouchableOpacity 
+                    onPress= {()=>this.props.navigation.navigate('HomeContestDetails', {data: match})}
+                    style= {{justifyContent: 'center', alignItems: 'center', width: '50%', height: 30, backgroundColor: '#44bd32', borderRadius: 4, margin: 2, padding: 2, elevation: 4}}>
+                    <Text>Join Now !
+                    </Text>
+                  </TouchableOpacity>
                       
                   </View>
                   </View>
 
 
                   <View style= {{flexDirection: 'column', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#F8EFBA', width: '94%', padding: 8}}>
-                  <View style= {{flexDirection: 'column', justifyContent: 'space-between', alignItems: 'center', borderWidth: 2, backgroundColor: 'white', borderColor: 'green', width: '100%', padding: 10, margin: 10}}>
+                  <View style= {{flexDirection: 'column', justifyContent: 'space-between', alignItems: 'center', borderWidth: 2, backgroundColor: 'white', borderColor: 'green', width: '93%', padding: 10, margin: 10}}>
                     <Text style= {{fontSize: 16, fontStyle: 'bold'}}>
                     5 - 10 Overs
                     </Text>
@@ -337,7 +331,7 @@ class Contests extends Component<Props> {
                       15 - 20 Overs
                     </Text>
 
-                  <View style= {{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%'}}>
+                  <View style= {{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
 
                     <View style= {{flexDirection: 'column', justifyContent: 'center', alignItems: 'center', marginHorizontal: 10}}>
                       <Text style= {{alignSelf: 'center', fontSize: 12}}>
@@ -412,6 +406,30 @@ class Contests extends Component<Props> {
                     </View>
                   </View>
 
+                  <View style= {{ backgroundColor: 'green', flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', borderWidth: 1, borderColor: 'red', width: '98%', padding: 8, margin: 10}}>
+                  <TouchableOpacity>
+                  <FontAwesome5 name= "baseball-ball" size= {18} color= 'white' style= {{alignSelf: 'center'}} />
+                    <Text style= {{color: 'white'}}>0 - 10 Overs
+                    </Text>
+                  </TouchableOpacity>
+                  </View>
+
+                  <View style= {{ backgroundColor: 'green', flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', borderWidth: 1, borderColor: 'red', width: '98%', padding: 8, margin: 10}}>
+                  <TouchableOpacity>
+                    <FontAwesome5 name= "baseball-ball" size= {18} color= 'white' style= {{alignSelf: 'center'}} />
+                    <Text style= {{color: 'white'}}>10 - 20 Overs
+                    </Text>
+                  </TouchableOpacity>
+                  </View>
+
+                  <View style= {{ backgroundColor: 'green', flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', borderWidth: 1, borderColor: 'red', width: '98%', padding: 8, margin: 10}}>
+                  <TouchableOpacity>
+                  <FontAwesome5 name= "baseball-ball" size= {18} color= 'white' style= {{alignSelf: 'center'}} />
+                    <Text style= {{color: 'white'}}>0 - 20 Overs
+                    </Text>
+                  </TouchableOpacity>
+                  </View>
+
         </View>
       </ScrollView>
     );
@@ -426,12 +444,13 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       justifyContent: 'flex-start',
       flexDirection: 'column',
-      padding: 2,
+      padding: 4,
+      margin: 10
     },
     headerView: {
       borderWidth: 2,
       padding: 6,
-      width: '100%',
+      width: '98%',
       borderColor: 'green',
       elevation: 4,
       flexDirection: 'column',
@@ -500,4 +519,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default Contests;
+export default HomeContests;

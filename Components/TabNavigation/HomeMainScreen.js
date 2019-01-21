@@ -11,24 +11,37 @@ import {
     ActivityIndicator,
     Modal,
     Dimensions,
+    Button,
     Picker
 } from 'react-native';
 import Entypo from 'react-native-vector-icons/Entypo';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
-const data = require('../Dummy/Matches');
+const data = require('../../Dummy/Matches');
 
 var widthD = Dimensions.get('window').width;
 var heightD = Dimensions.get('window').height;
 let h_ = heightD / 2
 
 Props = {};
-class MainScreen extends Component<Props> {
+class HomeMainScreen extends Component<Props> {
 
   static navigationOptions={
     headerStyle: {
       backgroundColor: '#009432'
     },
-    title: 'Powerplay'
+    headerRight: (
+      <View style= {{flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center', padding: 4}}>
+      <View style= {{justifyContent: 'center', alignItems: 'center', padding: 8}}>
+        <Ionicons name= 'ios-notifications' size= {30} color= 'white' onPress= {()=> alert('Under development Notifs')} />
+      </View>
+
+      <View style= {{justifyContent: 'center', alignItems: 'center', padding: 8}}>
+        <Entypo name= 'wallet' size= {30} color= 'white' onPress= {()=> alert('Under development Wallet')} />
+      </View>
+      </View>
+    ),
+    title: 'Powerplay',
   };
 
   constructor(props) {
@@ -81,38 +94,20 @@ class MainScreen extends Component<Props> {
     });
   }
 
-  goThrough() {
-    this.props.navigation.navigate('MainScreen');
-  }
+  // goThrough() {
+  //   this.props.navigation.navigate('MainScreen');
+  // }
 
-  secondsToString( timeRemaining ) {
-    // timeRemaining = timeRemaining / 1000000
-    var date = String(new Date(timeRemaining));
-    return date;
-    // alert(date)
-    // return (setInterval(()=> {
-    //       this.calculate(date)
-    //     }, 1000));
-  }
-
-  calculate(timeRemaining) {
-    if (timeRemaining >= 0) {
-      days = parseInt(timeRemaining / 86400);
-      timeRemaining = (timeRemaining % 86400);
-      
-      hours = parseInt(timeRemaining / 3600);
-      timeRemaining = (timeRemaining % 3600);
-      
-      minutes = parseInt(timeRemaining / 60);
-      timeRemaining = (timeRemaining % 60);
-      
-      seconds = parseInt(timeRemaining);
-      
-      return (parseInt(days, 10) + " " + ("0"+hours).slice(-2) + " " + ("0"+minutes).slice(-2) + " " + ("0"+seconds).slice(-2));
-    } 
-    else {
-      return;
-    }
+  secondsToString( millisecond ) {
+    let seconds= millisecond / 1000000
+    var day, hour, minute, sec;
+    day = Math.floor(seconds / 86400);
+    let h = seconds % 86400
+    hour = Math.floor(h / 3600)
+    let m = h % 3600
+    minute = Math.floor(m / 60)
+    // alert(sec)
+    return (' ' +day+ ' days ' + hour+ ' hours ' + minute + ' minutes ' );
   }
 
   truncate(string) {
@@ -124,7 +119,7 @@ class MainScreen extends Component<Props> {
     return this.state.matchArray.map((match, idx)=> {
       return (<View key= {idx} style= {{ width: widthD-30, backgroundColor: '#ecf0f1', elevation: 4, height: 150, margin: 5}}> 
               <TouchableOpacity key = {idx} style={styles.touchMatch}
-                onPress= {()=> this.props.navigation.navigate('Contests', { data: match, contestDetails: this.state.incomeMatch })}
+                onPress= {()=> this.props.navigation.navigate('HomeContests', { data: match, contestDetails: this.state.incomeMatch })}
               >
                   <Text key = {idx} style= {styles.teamText}>
                     {match.type}
@@ -144,7 +139,7 @@ class MainScreen extends Component<Props> {
                   </View>
                   <View key = {idx} style= {{flexDirection: 'row', justifyContent: 'space-between'}}>
                     <Entypo key= {idx} name= "clock" size= {16} color= "green" style={{alignSelf: 'center'}} />
-                    <Text key={idx}>{this.secondsToString(match.startTime)}</Text>
+                    {/**<Text key={idx}>{this.secondsToString(match.startTime)}</Text>**/}
                   </View>
               </TouchableOpacity>
               </View>);
@@ -166,7 +161,6 @@ class MainScreen extends Component<Props> {
         return (
           <View style={{flex:1, backgroundColor: 'white', flexDirection: 'column', width: '100%', alignItems: 'center'}}>       
           <View style= {styles.innerContainer}>
-            
             <View style= {styles.pickerView}>
               <TouchableOpacity onPress= {()=> this.setState({ tab: true })} 
                 style= {!this.state.tab ? styles.tabButtonDown : styles.tabButton}> 
@@ -183,31 +177,6 @@ class MainScreen extends Component<Props> {
               </TouchableOpacity>              
             </View>
 
-            <View style= {{ marginTop: 2, width: '98%', height: 2, backgroundColor: 'green'}}>
-            </View>
-
-            <View style= {styles.pickerView}>
-              <TouchableOpacity 
-                style= {styles.tabButtonDownBelow}> 
-                <Text>             
-                  Upcoming
-                </Text>             
-              </TouchableOpacity>
-
-              <TouchableOpacity 
-                style= {styles.tabButtonDownBelow}> 
-                <Text>             
-                  Live
-                </Text>             
-              </TouchableOpacity>
-
-              <TouchableOpacity 
-                style= {styles.tabButtonDownBelow}> 
-                <Text>             
-                  Completed
-                </Text>             
-              </TouchableOpacity>              
-            </View>
               <ScrollView showsVerticalScrollIndicator= {false}>
                 {
                   this.renderMatches()
@@ -264,6 +233,8 @@ const styles = StyleSheet.create({
       height: 140,
       justifyContent: 'space-around',
       alignItems: 'center',
+      borderColor: 'red',
+      borderWidth: 2,
       borderRadius: 2,
       backgroundColor: 'white',
       margin: 5
@@ -287,7 +258,6 @@ const styles = StyleSheet.create({
     pickerView: {
       flexDirection: 'row',
       justifyContent: 'center',
-      width: '100%',
       alignItems: 'center'
     },
     picker: {
@@ -297,33 +267,27 @@ const styles = StyleSheet.create({
       height: 50,
     },
     tabButton: { 
-      width: '50%', 
+      width: '35%', 
       height: 40, 
       padding: 4, 
+      borderRadius: 4, 
+      margin: 4, 
       elevation: 4, 
-      backgroundColor: '#7bed9f', 
+      backgroundColor: '#2ecc71', 
       justifyContent: 'center', 
       alignItems: 'center'
     },
     tabButtonDown: {
-      width: '50%', 
+      width: '35%', 
       height: 40, 
       padding: 4, 
+      borderRadius: 4, 
+      margin: 4, 
       elevation: 4, 
       backgroundColor: '#dcdde1', 
       justifyContent: 'center', 
       alignItems: 'center'
-    },
-    tabButtonDownBelow: {
-      width: widthD / 3, 
-      height: 30, 
-      borderTopWidth: 2,
-      borderRightWidth: 2,
-      borderLeftWidth: 2,
-      justifyContent: 'center', 
-      borderColor: '#7bed9f',
-      alignItems: 'center'
     }
 });
 
-export default MainScreen;
+export default HomeMainScreen;

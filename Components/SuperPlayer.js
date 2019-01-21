@@ -9,12 +9,20 @@ import {
     Image,
     AsyncStorage,
     ScrollView,
-    ActivityIndicator
+    ActivityIndicator,
+    Alert,
+    Animated,
+    Dimensions
 } from 'react-native';
 import Entypo from 'react-native-vector-icons/Entypo';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 Props = {};
+
+const deviceWidth = Dimensions.get('window').width
+const FIXED_BAR_WIDTH = 280
+const BAR_SPACE = 10
+
 class SuperPlayer extends Component<Props> {
 
   static navigationOptions={
@@ -27,22 +35,53 @@ class SuperPlayer extends Component<Props> {
     super(props);
     
      this.state={ 
-       index: Number
+       index: Number,
+       animVal: new Animated.Value(0),
+       itemWidth: 0
     };
   };
 
+  componentDidMount() {
+    // this.carouselHandle(this.props.navigation.state.params.players);
+    this.routeFunction(this.props.navigation.state.params.players);
+  }
+
+  routeFunction(val){
+        var numItems = val.length;
+            let itemWidth = (280 / numItems) - ((numItems - 1) * 10)
+                this.setState({itemWidth: itemWidth});
+  }
+
+  checkAuth(match) {
+    Alert.alert(
+      'Not Logged in!',
+      'Please sign up or log in to continue',
+      [
+        {text: 'Sign Up', onPress: () => this.props.navigation.navigate('Register')},
+        {text: 'Log In', onPress: () => this.props.navigation.navigate('Login', { entryFees: 25, match: this.props.navigation.state.params.match })},
+      ],
+      { cancelable: false }
+    )
+  }
+
   chooseSuper(value) {
+    if(arguments[1] === 1) {
+      this.refs.scrollView.scrollTo({ x: (( (value + 1) - 1 ) * deviceWidth ), y: 0, animated: true });
+    }
+    if(arguments[1] === 2) {
+      this.refs.scrollView1.scrollTo({ x: (( (value + 1) - 1 ) * 50 ), y: 0, animated: true });
+    }
     this.setState({ index: value })
   }
 
   imagesOnly(data) {
         return data.map((item, idx)=> {
           return (
-            <View key= {idx} style= {{flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center'}}>
+            <View key= {idx} style= {{width: deviceWidth, flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center'}}>
             <View key= {idx} style= {this.state.index === idx ? styles.dilemma1 : styles.dilemma}>
             <TouchableHighlight key= {idx} style= {this.state.index === idx ? styles.dilemma1 : styles.dilemma}
-            onPress= {()=> this.chooseSuper(idx)}>
-              <Image key= {idx} source={{ uri: item.imageUrl }} style= {{width: 180, height: 180, borderRadius: 90, alignSelf: 'center'}} resizeMode= 'cover' 
+            onPress= {()=> this.chooseSuper(idx, 2)}>
+              <Image key= {idx} source={{ uri: item.imageUrl }} style= {{width: 190, height: 190, borderRadius: 95, alignSelf: 'center', padding: 20}} resizeMode= 'cover' 
                />
             </TouchableHighlight>
             </View>
@@ -58,16 +97,29 @@ class SuperPlayer extends Component<Props> {
     return data.map((item, idx)=> {
           return (
             <View key= {idx} style= {{flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'center'}}>
+            <TouchableHighlight onPress= {()=> this.chooseSuper(idx, 1)}>
             <View key= {idx} style= {{flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginHorizontal: 8}}>
-              <Image key= {idx} source={{ uri: item.imageUrl }} style= {{width: 50, height: 50, borderRadius: 50, alignSelf: 'center'}} resizeMode= 'cover' />
-              <Entypo name= "star" size= {20} color= "#ff9f1a" style= {this.state.index === idx ? styles.tag : styles.tag1} />
+              <Image key= {idx} source={{ uri: item.imageUrl }} style= {{width: 50, height: 50, borderRadius: 50, alignSelf: 'center'}} resizeMode= 'cover'
+              />
+              <Entypo name= "star" size= {20} color= "#ff9f1a" style= {this.state.index === idx ? styles.tag : styles.tag1} onPress= {()=> this.chooseSuper(idx)} />
             </View>
+            </TouchableHighlight>
               <Text key= {idx} style= {{position: 'relative', fontSize: 8}}>
                 {item.name}
               </Text>
               </View>
             )
         });
+  }
+
+  secondsToString( timeRemaining ) {
+    // timeRemaining = timeRemaining / 1000000
+    var date = String(new Date(timeRemaining));
+    return date;
+    // alert(date)
+    // return (setInterval(()=> {
+    //       this.calculate(timeRemaining)
+    //     }, 1000));
   }
 
     render() {
@@ -95,7 +147,7 @@ class SuperPlayer extends Component<Props> {
                   
                   <View style= {{flexDirection: 'row', justifyContent: 'space-around'}}>
                   <Entypo name= "clock" color= "red" size= {14} style= {{alignSelf: 'center'}} />
-                  <Text>{match.startTime}</Text>
+                  <Text>{this.secondsToString(match.startTime)}</Text>
                   </View>
                   </View>
                 </View>
@@ -106,7 +158,7 @@ class SuperPlayer extends Component<Props> {
                   </Text>
                 </View>
 
-                <ScrollView horizontal showsHorizontalScrollIndicator= {false}>
+                <ScrollView ref= "scrollView" horizontal  showsHorizontalScrollIndicator= {false}>
                     {
                       this.imagesOnly(players)
                     }
@@ -120,13 +172,13 @@ class SuperPlayer extends Component<Props> {
                       </Text>
                     </View>
                     <View style= {{height: '80%', width: '100%'}}>
-                   <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                   <ScrollView ref= "scrollView1" horizontal showsHorizontalScrollIndicator={false}>
                       {
                         this.castPlayers(players)
                       }
                    </ScrollView>
                    </View>
-                   <TouchableOpacity style= {styles.nextPageFinal}>
+                   <TouchableOpacity style= {styles.nextPageFinal} onPress={()=> this.checkAuth(match)}>
                     <Text style={{alignSelf: 'center', fontSize: 12}}>
                       Next
                     </Text>
@@ -153,10 +205,15 @@ const styles = StyleSheet.create({
       justifyContent: 'center', 
       alignItems: 'center', 
       marginHorizontal: 40,
-      width: 190,
-      height: 190,
-      borderRadius: 95,
+      width: 200,
+      height: 200,
+      borderRadius: 100,
       backgroundColor: '#ff9f1a'
+    },
+    track: {
+      backgroundColor: '#ccc',
+      overflow: 'hidden',
+      height: 2,
     },
     innerContainer: {
       width: '100%',
@@ -197,6 +254,13 @@ const styles = StyleSheet.create({
       justifyContent: 'center', 
       flexDirection: 'column', 
       padding: 4
+    },
+    barContainer: {
+      position: 'absolute',
+      zIndex: 2,
+      top: 15,
+      flexDirection: 'row',
+       overflow: 'hidden',
     },
     headerView: {
       borderBottomWidth: 2,
@@ -285,6 +349,19 @@ const styles = StyleSheet.create({
       backgroundColor: '#f1f2f6',
       margin: 4,
       paddingHorizontal: 14 
+    },
+    bar: {
+      backgroundColor: '#5294d6',
+      height: 2,
+      position: 'absolute',
+      left: 0,
+      top: 0,
+    },
+    container: {
+      flex: 1,
+      flexDirection: 'column',
+      alignItems: 'center',
+      justifyContent: 'center',
     }
 });
 

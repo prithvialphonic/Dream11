@@ -10,13 +10,29 @@ import MainScreen from './Components/MainScreen';
 import Contests from './Components/Contests';
 import ContestDetails from './Components/ContestDetails';
 import SuperPlayer from './Components/SuperPlayer';
+import indexOfTab from './Components/indexOfTab';
+import Wallet from './Components/Wallet';
+import Register from './Components/AuthScreens/Register';
+import Login from './Components/AuthScreens/Login';
 
 const App = createStackNavigator({
   Welcome: {
     screen: Welcome
   },
+  indexOfTab: {
+    screen: indexOfTab,
+    navigationOptions: {
+      header: null
+    }
+  },
   MainScreen: {
     screen: MainScreen
+  },
+  Register: {
+    screen: Register
+  },
+  Login: {
+    screen: Login
   },
   Contests: {
     screen: Contests
@@ -26,6 +42,9 @@ const App = createStackNavigator({
   },
   SuperPlayer: {
     screen: SuperPlayer
-  }
+  },
+  Wallet: {
+    screen: Wallet
+  },
 });
 export default createAppContainer(App);

@@ -8,8 +8,10 @@ import {
     Image,
     AsyncStorage,
     ScrollView,
-    ActivityIndicator
+    ActivityIndicator,
+    WebView
 } from 'react-native';
+import paytm from 'react-native-paytm';
 
 Props = {};
 class Welcome extends Component<Props> {
@@ -26,9 +28,67 @@ class Welcome extends Component<Props> {
        password:null,
        dataTemp:'',
        ready:true,
-       message:''       
+       message:'',
+       incomeMatch: {}
     };
   };
+
+  componentDidMount= async()=> {
+      try {
+        const value = await AsyncStorage.getItem('@MySuperStore:key');
+        if (value !== null) {
+            this.props.navigation.navigate('indexOfTab');
+        }
+       } catch (error) {
+            alert('Not auth Token');
+       }
+  }
+
+  someFunc() {
+    var request= {}
+    request['pgName'] = "paytm";
+    request['source'] = "android";
+    request['amount'] = 190;
+    request['authToken'] = "8fb7ef13-74cd-426f-8356-d32e2d701b17";
+
+    fetch('http://13.127.217.102:8000/payment/initiatePayment',{
+    method: 'POST',
+    headers: {
+    'Access-Control-Allow-Credentials': true,
+    'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(request),
+    })
+    .then((res)=> res.json())
+    .then((responseJson)=> {
+    this.setState({ incomeMatch: responseJson.params });
+    // alert(JSON.stringify(this.state.incomeMatch));
+    var a = []
+    a = Object.assign(this.state.incomeMatch)
+    // this.call(a);
+    //                 matchArray: responseJson.matches });
+    });
+  }
+
+  call(a) {
+    var paytmdetails = {
+      mid: a.MID,
+      industryType: a.INDUSTRY_TYPE_ID, //Prod
+      website: a.WEBSITE, //prod
+      channel: 'WEB',
+      amount: a.TXN_AMOUNT,
+      orderId: a.ORDER_ID,
+      email: a.EMAIL,
+      phone: a.MOBILE_NO,
+      custId: 'cust121',
+      checksumhash: a.CHECKSUMHASH,
+      callback: a.CALLBACK_URL,
+      mode:'Staging',
+    }     
+    // alert(JSON.stringify(a))
+    
+    paytm.startPayment(paytmdetails);
+  }
 
     render() {
         return (
@@ -41,12 +101,11 @@ class Welcome extends Component<Props> {
                 >
                     <Text style={styles.submitButtonTextPlay}>Let's Play</Text>
                 </TouchableOpacity>
-
             <View style= {styles.lowerLogin}>                  
-                <TouchableOpacity style={styles.submitButton}>
+                <TouchableOpacity style={styles.submitButton} onPress= {()=> this.props.navigation.navigate('Register')}>
                     <Text style={styles.submitButtonText}>Sign Up</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.submitButton}>
+                <TouchableOpacity style={styles.submitButton} onPress= {()=> this.props.navigation.navigate('Login')}>
                     <Text style={styles.submitButtonText}>Login</Text>
                 </TouchableOpacity>
             </View>                  
