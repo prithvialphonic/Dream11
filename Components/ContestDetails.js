@@ -287,9 +287,8 @@ class ContestDetails extends Component<Props> {
                   </View>
                 </View>
 
-                <View style= {{flexDirection: 'column', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#F8EFBA', width: '100%', padding: 2}}>
-                  <View style= {{flexDirection: 'column', justifyContent: 'space-between', alignItems: 'center', borderWidth: 2, backgroundColor: 'white', borderColor: 'green', width: '100%', padding: 4, margin: 4}}>
-                    <Text style= {{fontSize: 16, fontStyle: 'bold'}}>
+                  <View style= {{flexDirection: 'column', justifyContent: 'space-between', alignItems: 'center', backgroundColor: 'white', width: '100%', padding: 4}}>
+                    <Text style= {{fontSize: 16, fontStyle: 'bold', borderRadius: 14, elevation: 4, padding: 10}}>
                       Contest 0 - 5 Overs
                     </Text>
 
@@ -324,7 +323,6 @@ class ContestDetails extends Component<Props> {
                       </Text>
                   </View>                           
                       
-                  </View>
                   </View>
 
                   <View style= {styles.pickerView}>
@@ -441,9 +439,7 @@ class ContestDetails extends Component<Props> {
                     animationType="slide"
                     transparent={false}
                     visible={this.state.previewVisible}
-                    onRequestClose={() => {
-                      Alert.alert('Modal has been closed.');
-                    }}>
+                    >
                       <View 
                         style= {{flex: 1, width: width, height: height, flexDirection: 'column', justifyContent: 'center', alignItems: 'center'}}>
                         
@@ -616,7 +612,7 @@ const styles = StyleSheet.create({
       width: '100%'
     },
     infinite: {
-      width: '100%',
+      width: '98%',
       height: 60,
       flexDirection: 'row',
       justifyContent: 'space-between',
@@ -626,12 +622,14 @@ const styles = StyleSheet.create({
       paddingHorizontal: 14 
     },
     infiniteDelect: {
-      width: '100%',
+      width: '98%',
       height: 60,
+      borderWidth: 2,
+      borderColor: 'green',
       flexDirection: 'row',
       justifyContent: 'space-between',
       alignItems: 'center',
-      backgroundColor: '#7efff5',
+      backgroundColor: '#f1f2f6',
       margin: 4,
       paddingHorizontal: 14 
     },

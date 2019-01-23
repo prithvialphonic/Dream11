@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, Platform, TextInput, TouchableNativeFeedback } from 'react-native';
+import { View, Text, StyleSheet, Platform, TextInput, TouchableNativeFeedback, WebView } from 'react-native';
 import Entypo from 'react-native-vector-icons/Entypo';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
@@ -14,11 +14,7 @@ class Wallet extends Component {
   	constructor(props) {
   		super(props);
   		this.state= {
-  			mobile: '',
-  			user: '',
-  			password: '',
-  			repeat_password: '',
-  			email: ''
+  			bool: false
   		};
   	}
 
@@ -36,8 +32,29 @@ class Wallet extends Component {
     alert('here')
   }
 
+  handleResponse(data) {
+    // alert(JSON.stringify(data.title));
+    if(data.title === 'TXN_SUCCESS') {
+      this.setState({ bool : false });
+      alert('done')
+    }
+    
+    else if (data.title === 'TXN_FAILURE') {
+      alert('FAILURE')
+    }
+
+    else if (data.title === 'PENDING') {
+      alert('PENDING')
+    }
+  }
+
+  allOf() {
+    this.setState({ bool: true });
+  }
+
 	render() {
     const match = this.props.navigation.state.params.match;
+    if(!this.state.bool) {
 		return(
 			<View style = {{flexDirection: 'column', justifyContent: 'space-between', alignItems: 'center', width: '100%',
               paddingVertical: 20, paddingHorizontal: 10}}>
@@ -73,15 +90,25 @@ class Wallet extends Component {
                   </Text>
                 </View>
                   <TouchableNativeFeedback 
-                  onPress= {()=> this.go()}
+                  onPress= {()=> this.allOf()}
                   style= {{ width: '50%', justifyContent: 'center', alignItems: 'center', height: 40, borderRadius: 10, backgroundColor: 'green'}}>
-                    <Text>
+                    <Text >
                       Pay!
                     </Text>
                   </TouchableNativeFeedback>
 
+
               </View>
 		);
+  }
+
+    if(this.state.bool)
+    return(
+      <WebView 
+                    source= {{ uri: 'http://13.127.217.102:8000/payment/initiatePaymentWeb?source=android&pgName=paytm&amount=100.00&authToken=8fb7ef13-74cd-426f-8356-d32e2d701b17' }}
+                    onNavigationStateChange = {(data) => this.handleResponse(data)}
+                  />
+    );
 	}
 }
 

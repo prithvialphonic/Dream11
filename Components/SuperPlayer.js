@@ -57,7 +57,7 @@ class SuperPlayer extends Component<Props> {
       'Not Logged in!',
       'Please sign up or log in to continue',
       [
-        {text: 'Sign Up', onPress: () => this.props.navigation.navigate('Register')},
+        {text: 'Sign Up', onPress: () => this.props.navigation.navigate('Register', { entryFees: 25, match: this.props.navigation.state.params.match })},
         {text: 'Log In', onPress: () => this.props.navigation.navigate('Login', { entryFees: 25, match: this.props.navigation.state.params.match })},
       ],
       { cancelable: false }

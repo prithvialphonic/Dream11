@@ -9,13 +9,19 @@ import {
     Image,
     AsyncStorage,
     ScrollView,
-    ActivityIndicator
+    Dimensions,
+    ActivityIndicator,
+    Modal,
+    TouchableHighlight
 } from 'react-native';
 import Entypo from 'react-native-vector-icons/Entypo';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 const data = require('../Dummy/Contest');
 
 Props = {};
+
+const width = Dimensions.get('window').width;
+const height = Dimensions.get('window').height;
 class Contests extends Component<Props> {
 
   static navigationOptions={
@@ -34,7 +40,9 @@ class Contests extends Component<Props> {
         teamname2: '',
         teamname1: '',
         smallContest: [],
-        bigContest: []
+        bigContest: [],
+        modalVisible: false,
+        winningBreakup: []
     };
     this.contestInaam= {
       name: '0 - 5 Overs',
@@ -44,18 +52,39 @@ class Contests extends Component<Props> {
       fees: 25,
       totalteams: 1000
     }
+    this.renderModalContent = this.renderModalContent.bind(this);
   };
 
+  renderModalContent(data) {
+    return data.map((item, idx)=> {
+      return (<View key={idx}
+                style= {{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderBottomWidth: 1, borderColor: 'gray', width: '90%', height: 50, borderRadius: 10, backgroundColor: '#f5f6fa', marginBottom: 10, padding: 4, elevation: 4}}>
+                  <Text key={idx}>
+                    {item.rankString}
+                  </Text>
+                  <Text key={idx}>
+                    {item.winningAmount}
+                  </Text>
+              </View>)
+    })
+    alert(JSON.stringify(data))
+  }
+
   componentWillMount() {
-    fetch('http://13.127.217.102:8000/getMatchDetails?unique_id=73')
+    var request = {}
+    request['contestId'] = 6
+    fetch('http://13.127.217.102:8000/getWinningBreakUp', {
+      method: 'POST',
+            headers: {
+                'Access-Control-Allow-Credentials': true,
+                'Content-Type': 'application/json',
+            },
+      body: JSON.stringify(request)
+    })
     .then((response)=> response.json())
     .then((res)=> {
-      this.setState({ contestDTO: res.contestDTOs,
-                      teamsquad1: res.squad[0].players,
-                      teamsquad2: res.squad[1].players,
-                      teamname1:  res.squad[0].name,
-                      teamname2:  res.squad[1].name
-      });
+      this.setState({ winningBreakup: res.distributionDTO });
+      // alert(JSON.stringify(this.state.winningBreakup[0]));
     });
   }
 
@@ -79,7 +108,7 @@ class Contests extends Component<Props> {
       const dif = data.default.contestDTOs[1].totalCount - data.default.contestDTOs[1].playingCount
       let total = data.default.contestDTOs[1].totalCount
       let playing = data.default.contestDTOs[1].playingCount
-      // alert(JSON.stringify(this.state.contestDTO));
+      // alert(JSON.stringify(this.state.winningBreakup));
         return (
              <ScrollView showsVerticalScrollIndicator= {false}>
               <View style={{flex:1, justifyContent: 'center', flexDirection: 'column', alignItems: 'center'}}>       
@@ -149,8 +178,13 @@ class Contests extends Component<Props> {
                       <Text style= {{alignSelf: 'center', fontSize: 12}}>
                         Winners
                       </Text>
-                      <Text style= {{alignSelf: 'center', fontSize: 12, color: '#44bd32'}}>
-                        10,000 
+                      <Text 
+                        onPress= {()=> this.setState({ modalVisible: true })}
+                        style= {{alignSelf: 'center', fontSize: 12, color: '#44bd32'}}>
+                          10,000 
+                        <Entypo 
+                          onPress= {()=> this.setState({ modalVisible: true })}
+                          name= "chevron-small-up" size= {20} color= 'gray' style= {{ alignSelf: 'center'}} />
                       </Text>
                     </View>
 
@@ -411,6 +445,41 @@ class Contests extends Component<Props> {
                       </Text>
                     </View>
                   </View>
+
+                  <Modal
+                  style={{alignSelf: 'center'}}
+                    animationType="slide"
+                    transparent={false}
+                    visible={this.state.modalVisible}
+                    onRequestClose={() => {
+                      Alert.alert('Modal has been closed.');
+                    }}>
+                      <View 
+                        style= {{width: width, height: height, flexDirection: 'column', justifyContent: 'center', alignItems: 'center', backgroundColor: "#00000040"}}>
+                      <View
+                        style= {{width: '70%', height: '70%', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', backgroundColor: "white", borderRadius: 40}}>
+                        <View style= {{flexDirection: 'row', justifyContent: 'space-between', width: '100%', alignItems: 'center', padding: 30}}>
+                          <Text>
+                            Ranks
+                          </Text>
+                          <Text>
+                            Winning Amount
+                          </Text>
+                        </View>
+                          {
+                            this.renderModalContent(this.state.winningBreakup)
+                          }
+                          
+                        <TouchableHighlight
+                          style= {{position: 'absolute', bottom: 4, marginTop: 4, justifyContent: 'center', alignItems: 'center', width: 80, height: 40, borderWidth: 1, borderRadius: 10, borderColor: 'green'}}
+                          onPress={() => {
+                            this.setState({ modalVisible: false })
+                          }}>
+                          <Text style= {{color: 'green'}}>Back</Text>
+                        </TouchableHighlight>
+                    </View>
+                    </View>
+                  </Modal>
 
         </View>
       </ScrollView>
