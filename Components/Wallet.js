@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Platform, TextInput, TouchableNativeFeedback, W
 import Entypo from 'react-native-vector-icons/Entypo';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
+const myWallet = 50;
 class Wallet extends Component {
 
 	static navigationOptions={
@@ -14,7 +15,8 @@ class Wallet extends Component {
   	constructor(props) {
   		super(props);
   		this.state= {
-  			bool: false
+  			bool: false,
+			updated: false
   		};
   	}
 
@@ -35,7 +37,7 @@ class Wallet extends Component {
   handleResponse(data) {
     // alert(JSON.stringify(data.title));
     if(data.title === 'TXN_SUCCESS') {
-      this.setState({ bool : false });
+      this.setState({ bool : false, updated: true });
       alert('done')
     }
     
@@ -91,13 +93,18 @@ class Wallet extends Component {
                 </View>
                   <TouchableNativeFeedback 
                   onPress= {()=> this.allOf()}
-                  style= {{ width: '50%', justifyContent: 'center', alignItems: 'center', height: 40, borderRadius: 10, backgroundColor: 'green'}}>
-                    <Text >
+                  style= {{ width: 100, justifyContent: 'center', alignItems: 'center', height: 30, borderRadius: 4, backgroundColor: 'green', elevation: 4}}>
+                    <Text style= {{alignSelf: 'center'}} >
                       Pay!
                     </Text>
                   </TouchableNativeFeedback>
 
-
+		{
+			this.state.updated ? (<View style= {{flexDirection: 'column', justifyContent: 'space-around', alignItems: 'center', backgroundColor: '#00000040'}}>
+					      	<Text>UpdatedBalance: </Text>
+					      	<Text>{myWallet + 100.00}</Text>
+					      </View>) : null
+		}
               </View>
 		);
   }
